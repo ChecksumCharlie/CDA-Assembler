@@ -1,0 +1,13 @@
+    .text
+    .ent main
+
+main:
+    add $t0, $t0, $t2
+    div $s6, $0
+    jr $31
+    mflo $s3
+    mult $s2, $t0
+    sll $t7, $8, 14
+    sub $t0, $0, $2
+    
+    .end main

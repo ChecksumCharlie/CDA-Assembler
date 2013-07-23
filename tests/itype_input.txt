@@ -1,0 +1,15 @@
+a:
+    addi $t0, $t0, 1
+    bne $t0, $0, d
+b:
+    addi $t0, $t0, 1
+    addi $0, $0, 0
+    addi $0, $0, 0
+	li $t0, 5000000
+	j c
+c:
+    addi $t0, $t0, 1
+    addi $0, $0, 0
+d:
+    bltz $t1, b
+    addi $1,$2, 5

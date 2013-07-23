@@ -1,0 +1,9 @@
+    .text
+    .ent main
+
+main:
+    addi $t0, $t1, -56
+    lw $at, 12($s0)
+    sw $at, 16($2)
+    
+    .end main
