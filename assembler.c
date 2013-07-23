@@ -243,7 +243,7 @@ parse_instruction(
 			t = parse_register(term);
 			term = strtok(NULL, " (");
 			offset = parse_number(term);
-			term = strtok(NULL, " )");
+			term = strtok(NULL, "( )");
 			s = parse_register(term);
 		break;
 	case JAL:
