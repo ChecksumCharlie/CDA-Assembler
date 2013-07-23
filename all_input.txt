@@ -1,0 +1,34 @@
+    .text
+    .ent main
+main:
+    bltz $t0, done
+    bne $t0, $0, done
+    
+    addi $sp, $sp, -4
+    sw $31, 0($sp)
+    
+    jal abc
+    
+    lw $ra, 0($sp)
+    addi $sp, $sp, 4
+    
+    j main
+    
+done:
+    jr $31
+    .end main
+    
+abc:
+    addi $t0, $a0, -32
+    mult $t0, $s0
+    mflo $12
+    div     $t0, $s1
+    mflo $v0
+    
+    bne $s1, $t0, main
+    jr $ra
+
+
+    
+    
+    
