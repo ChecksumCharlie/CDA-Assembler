@@ -325,7 +325,6 @@ register_entry_t register_table[] =
 	NULL
 };
 
-label_list_t* root_label_list = NULL;
 vector_uint_t * global_machine_code = NULL;
 pStringTable StringTable = NULL;
 pHashTable RelocTable = NULL;
@@ -407,7 +406,6 @@ tHashTable* HashTableAllocate(eHashType hashtype)
 	tbl = (tHashTable*)malloc(sizeof(tHashTable));
 	tbl->nbuckets = 8;
 	tbl->nnodes = tbl->mask = 0;
-	tbl->postRebuild = NULL;
 	tbl->rebuildSize = tbl->nbuckets * 3;
 	tbl->type = hashtype;
 
@@ -572,8 +570,6 @@ static void HashTableRebuild(tHashTable* tb)
 
 	}
 
-	if(tb->postRebuild)
-		tb->postRebuild(tb, tb->nbuckets / 4, tb->nbuckets);
 
 	free(buckets);
 }
@@ -612,11 +608,6 @@ void HashTableRemove(tHashTable* tb, tHashNode* nd)
 	free(nd);
 }
 
-
-
-
-
-
 tStringTable* StringTableAllocate()
 {
 	tStringTable* tb;
@@ -633,11 +624,6 @@ void StringTableFree(tStringTable* tb)
 	HashTableFree(tb->lookup);
 	HashTableFree(tb->hashes);
 	free(tb);
-}
-
-const uint32_t StringTableNumStrings(tStringTable* s)
-{
-	return s->hashes->nnodes - 1;
 }
 
 const char* StringTableGetString(tStringTable* tb, const uint32_t index)
@@ -660,45 +646,4 @@ uint32_t StringTableGetIndex(tStringTable* tb, const char* string)
 	HashTableInsertWord(tb->lookup, tb->_nextId, &isnew)->data.ptr = t;
 	++(tb->_nextId);
 	return t->data.uint32;
-}
-
-void StringTableSerialize(tStringTable* st, FILE* fh)
-{
-	size_t i, ii;
-	i = st->hashes->nnodes;
-	fwrite(&i, sizeof(i), 1, fh);
-	for(ii = 0; ii < i; ii++)
-	{
-		size_t strln;
-		const char* str;
-		str = StringTableGetString(st, ii);
-		strln = strlen(str);
-		fwrite(&strln, sizeof(strln), 1, fh);
-		fwrite(str, sizeof(char), strln, fh);
-	}
-}
-
-tStringTable* StringTableDeserialize(FILE* fh)
-{
-	size_t nodes, bufsize = 1024;
-	char* buf;
-	tStringTable* t = StringTableAllocate();
-	buf = malloc(sizeof(char) * 1024);
-	fread(&nodes, sizeof(nodes), 1, fh);
-
-	while(nodes--)
-	{
-		size_t strln;
-		fread(&strln, sizeof(strln), 1, fh);
-		while(strln + 1 > bufsize)
-		{
-			bufsize *= 2;
-			buf = (char*)realloc(buf, bufsize * sizeof(char));
-		}
-		fread(buf, sizeof(char), strln, fh);
-		buf[strln] = 0;
-		StringTableGetIndex(t, buf);
-	}
-	free(buf);
-	return t;
 }
