@@ -615,24 +615,6 @@ void HashTableFree(tHashTable* tb)
 	free(tb);
 }
 
-void HashTableRemove(tHashTable* tb, tHashNode* nd)
-{
-	uint32_t index;
-	tHashNode* n;
-	index = tb->hash(tb, nd->hash);
-	if(nd == tb->buckets[index])
-		tb->buckets[index] = nd->next;
-	else
-	{
-		for(n = tb->buckets[index]; n != NULL && n->next != nd ; n = n->next);
-		if(n == NULL)
-			return;
-		n->next = nd->next;
-	}
-	tb->nnodes--;
-	free(nd);
-}
-
 tStringTable* StringTableAllocate()
 {
 	tStringTable* tb;

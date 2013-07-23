@@ -117,6 +117,22 @@ typedef enum register_type_t
 	ZERO, AT, V0, V1, A0, A1, A2, A3, T0, T1, T2, T3, T4, T5, T6, T7, S0, S1, S2, S3, S4, S5, S6, S7, T8, T9, K0, K1, GP, SP, FP, RA
 } register_type_t;
 
+/*******************************************************************************
+*
+* Instruction Entry structure
+*
+*******************************************************************************
+*
+* MEMBERS
+* name	Null terminated string representing instruction name
+*
+* type	instruction_type_t enum representing intruction type {I_TYPE, J_TYPE, R_TYPE}
+*
+* opcode	instruction_opcode_t enum representing integer opcode of instruction {ADD, DIV, ...}
+*
+* base	bit-string template for instruction
+*
+******************************************************************************/
 typedef struct instruction_entry_t
 {
 	const char* name;
@@ -125,6 +141,18 @@ typedef struct instruction_entry_t
 	const uint32_t base;
 } instruction_entry_t;
 
+/*******************************************************************************
+*
+* Register Entry structure
+*
+*******************************************************************************
+*
+* MEMBERS
+* name	Null terminated string representing register name
+*
+* regtype	enum representing integer id of register with name 'name'
+*
+******************************************************************************/
 typedef struct register_entry_t
 {
 	const char* name;
@@ -137,6 +165,22 @@ typedef enum
 	HASH_WORD,
 } eHashType;
 
+/*******************************************************************************
+*
+* Hash Node structure
+*
+*******************************************************************************
+*
+* MEMBERS
+* hash	Stored hash of 'key'
+*
+* data	union of possible storage types
+*
+* next	Pointer to next node in bucket
+*
+* key	- Variable Size Data Structure! - word or null-terminated string representing the key for this node
+*
+******************************************************************************/
 typedef struct tHashNode
 {
 	uint32_t hash;
@@ -157,6 +201,30 @@ typedef struct tHashNode
 
 } tHashNode;
 
+/*******************************************************************************
+*
+* Hash Table structure
+*
+*******************************************************************************
+*
+* MEMBERS
+* shift		Internal field - do not use - #buckets / 2, used in hash calculation
+*
+* mask		Internal field - do not use - bitmask for indexing
+*
+* type		Key-Type of HashTable, either HASH_WORD or HASH_STRING
+*
+* nbuckets	Number of buckets currently allocated by hashtable
+*
+* nnodes	Number of nodes currently stored within hashtable
+*
+* rebuildSize	Min number of nodes before rebuilding hashtable
+*
+* hash		Pointer to hashing reduction function
+*
+* buckets	Pointer to buckets currently allocated by hashtable
+*
+******************************************************************************/
 typedef struct tHashTable
 {
 	uint32_t shift;
@@ -173,6 +241,20 @@ typedef struct tHashTable
 	tHashNode** buckets;
 } tHashTable;
 
+/*******************************************************************************
+*
+* String Table structure
+*
+*******************************************************************************
+*
+* MEMBERS
+* hashes	String-Key hashtable used to map strings => integers
+*
+* lookup	Word-Key hashtable used to map integers => strings
+*
+* _nextId	Internal field - do not use - represents next available index
+*
+******************************************************************************/
 typedef struct tStringTable
 {
 	tHashTable* hashes;
@@ -180,25 +262,202 @@ typedef struct tStringTable
 	uint32_t _nextId;
 } tStringTable;
 
+/*******************************************************************************
+*
+* Allocates a HashTable and binds it to the key type provided, mixing of key-types is not valid
+*
+*******************************************************************************
+*
+* PARAMETERS
+*  type		eHashTable { HASH_WORD, HASH_STRING } representing the data to store in this hashtable
+*
+* RETURNS
+*	a new hash table
+*
+******************************************************************************/
 tHashTable* HashTableAllocate(eHashType type);
+
+/*******************************************************************************
+*
+* Inserts and finds a String-Key node into a hashtable
+*
+*******************************************************************************
+*
+* PARAMETERS
+*  tb		table to lookup or insert the string into
+*
+*  str		string to use as key
+*
+*  isnew	pointer to int, set to 1 if string was not present before insert, set to 0 otherwise
+*
+* RETURNS
+*	hash node representing key 'str'
+*
+******************************************************************************/
 tHashNode* HashTableInsertString(tHashTable* tb, const char* str, int* isnew);
+
+/*******************************************************************************
+*
+* Inserts and finds a Word-Key node into a hashtable
+*
+*******************************************************************************
+*
+* PARAMETERS
+*  tb		table to lookup or insert the word into
+*
+*  word		word to use as key
+*
+*  isnew	pointer to int, set to 1 if word was not present before insert, set to 0 otherwise
+*
+* RETURNS
+*	hash node representing key 'word'
+*
+******************************************************************************/
 tHashNode* HashTableInsertWord(tHashTable* tb, const size_t word, int* isnew);
 
+/*******************************************************************************
+*
+* Frees a hash table's book keeping information
+*
+*******************************************************************************
+*
+* PARAMETERS
+*  table	table to free
+*
+******************************************************************************/
 void HashTableFree(tHashTable* tb);
-void HashTableRemove(tHashTable* tb, tHashNode* node);
 
+/*******************************************************************************
+*
+* Allocates a String-Type hash node
+*
+*******************************************************************************
+*
+* PARAMETERS
+*  table	table to rebuild
+*
+*  word	word to use as node key
+*
+* RETURNS
+*	new hash node
+*
+******************************************************************************/
 static tHashNode* HashNodeAllocateString(const tHashTable* table, const char* str);
+
+/*******************************************************************************
+*
+* Allocates a Word-Type hash node
+*
+*******************************************************************************
+*
+* PARAMETERS
+*  table	table to store the node into
+*
+*  word	word to use as node key
+*
+* RETURNS
+*	new hash node
+******************************************************************************/
 static tHashNode* HashNodeAllocateWord(const tHashTable* table, const size_t word);
 
+/*******************************************************************************
+*
+* Rebuilds a full hashtable
+*
+*******************************************************************************
+*
+* PARAMETERS
+*  tb	table to rebuild
+*
+*
+******************************************************************************/
 static void HashTableRebuild(tHashTable* tb);
 
+/*******************************************************************************
+*
+* Hashes a string
+*
+*******************************************************************************
+*
+* PARAMETERS
+*  str	string to hash
+*
+* RETURNS
+*	32bit hash 'str'
+*
+******************************************************************************/
 static uint32_t HashString(const char* str);
+
+/*******************************************************************************
+*
+* Hashes a system word
+*
+*******************************************************************************
+*
+* PARAMETERS
+*  word       value to hash
+*
+* RETURNS
+*	32bit hash of 'word'
+*
+******************************************************************************/
 static uint32_t HashWord(const size_t word); 
 
+/*******************************************************************************
+*
+* Allocates the resources associated with the book keeping information of a string table
+*
+*******************************************************************************
+*
+* RETURNS
+*  A new string table
+*
+******************************************************************************/
 tStringTable* StringTableAllocate();
+
+/*******************************************************************************
+*
+* Frees the resources associated with the book keeping information of a string table
+*
+*******************************************************************************
+*
+* PARAMETERS
+*  tb       String table to free
+*
+******************************************************************************/
 void StringTableFree(tStringTable* tb);
 
+/*******************************************************************************
+*
+* Returns the string associated with 'index' from string table 'tb'
+*
+*******************************************************************************
+*
+* PARAMETERS
+*  tb       String table that contains the string to lookup
+*
+*  index	index to lookup in the string table
+*
+* RETURNS
+*	string associated with index 'index'
+*
+******************************************************************************/
 const char* StringTableGetString(tStringTable* tb, const uint32_t index);
+
+/*******************************************************************************
+*
+* Returns the index of string 'string' in string table 'st'
+*
+*******************************************************************************
+*
+* PARAMETERS
+*  st       String table that contains the string to lookup
+*
+*  string	String to look up in the string table
+*
+* RETURNS
+*	index associated with string 'string'
+******************************************************************************/
 uint32_t StringTableGetIndex(tStringTable* st, const char* string);
 
 static uint32_t FNV1a_Prime_32;
