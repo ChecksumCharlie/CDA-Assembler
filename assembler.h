@@ -48,7 +48,29 @@ typedef tStringTable* pStringTable;
 
 typedef uint32_t (*pHashFunc)(const tHashTable*, const uint32_t hash);
 
-
+/*******************************************************************************
+*
+* Formats the parameters into a R-Type instruction
+*
+*******************************************************************************
+*
+* PARAMETERS
+*  opcode	Opcode to emit
+*
+*  sreg		Value to use as the S-Register
+*
+*  treg		Value to use as the T-Register
+*
+*  dreg		Value to use as the D-Register
+*
+*  shift	Value to use as the shift
+*
+*  func		Value to use as the func
+*
+* RETURNS
+*	32bit instruction containing the given values
+*
+******************************************************************************/
 uint32_t 
 	emit_rtype(
 	uint8_t opcode, 
@@ -59,6 +81,25 @@ uint32_t
 	uint8_t func
 	);
 
+/*******************************************************************************
+*
+* Formats the parameters into a I-Type instruction
+*
+*******************************************************************************
+*
+* PARAMETERS
+*  opcode	Opcode to emit
+*
+*  sreg		Value to use as the S-Register
+*
+*  treg		Value to use as the T-Register
+*
+*  immi		Value to use as the 16-bit immidiate
+*
+* RETURNS
+*	32bit instruction containing the given values
+*
+******************************************************************************/
 uint32_t 
 	emit_itype(
 	uint8_t opcode,
@@ -67,39 +108,109 @@ uint32_t
 	int16_t immi
 	);
 
+/*******************************************************************************
+*
+* Formats the parameters into a J-Type instruction
+*
+*******************************************************************************
+*
+* PARAMETERS
+*  opcode	Opcode to emit
+*
+*  target	Value to use as the 26bit target
+*
+*
+* RETURNS
+*	32bit instruction containing the given values
+*
+******************************************************************************/
 uint32_t 
 	emit_jtype(
 	uint8_t opcode,
 	uint32_t target
 	);
 
+/*******************************************************************************
+*
+* Parses the provided string into an instruction or label
+*
+*******************************************************************************
+*
+* PARAMETERS
+*  str	string to pase
+*
+*
+******************************************************************************/
 void
 	parse_instruction(
 	char* str
 	);
 
+/*******************************************************************************
+*
+* Lookup the instruction represented by 'str'
+*
+*******************************************************************************
+*
+* PARAMETERS
+*  str	string to parse
+*
+* RETURNS
+*	Pointer to instruction entry representing the register 'str' OR Null if instruction does not exist
+******************************************************************************/
 instruction_entry_t*
 	lookup_instruction(
 	char* str
 	);
 
+/*******************************************************************************
+*
+* Lookup the register represented by 'str'
+*
+*******************************************************************************
+*
+* PARAMETERS
+*  str	string to parse
+*
+* RETURNS
+*	Pointer to register entry representing the register 'str'
+******************************************************************************/
 register_entry_t*
 	lookup_register(
 	char* str
 	);
 
+/*******************************************************************************
+*
+* Parses the provided string a register
+*
+*******************************************************************************
+*
+* PARAMETERS
+*  str	string to parse
+*
+* RETURNS
+*	8bit unsigned value representing the index of register 'str'
+******************************************************************************/
 uint8_t
 	parse_register(
 	char* str
 	);
 
+/*******************************************************************************
+*
+* Parses the provided string a number
+*
+*******************************************************************************
+*
+* PARAMETERS
+*  str	string to parse
+*
+* RETURNS
+*	32bit signed value representing 'str'
+******************************************************************************/
 int32_t
 	parse_number(
-	char* str
-	);
-
-void
-	parse_instruction(
 	char* str
 	);
 
