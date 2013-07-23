@@ -40,12 +40,12 @@ assemble(
 		if(inst >> 26 == 1 || inst >> 26 == 5)
 		{
 			abs = HashTableInsertWord(JmpTable, inst & 0x0000FFFF, NULL)->data.uint32;
-			inst = emit_itype(inst >> 26, (inst & 0x003E0000) >> 21, (inst & 0x00001F00) >> 16, inst & 0x0000FFFF);
+			inst = emit_itype(inst >> 26, (inst >> 21) & 0x1F, (inst >> 16) & 0x1F, ((int16_t)abs) - ((int16_t)br + 1));
 		}
 		else
 		{
 			abs = HashTableInsertWord(JmpTable, inst & 0x03FFFFFF, NULL)->data.uint32;
-			inst = inst & 0xFC000000 | ((((int32_t)abs - (int32_t)(br + 1))) & 0x03FFFFFF);
+			inst = emit_jtype(inst >> 26, ((int32_t)abs) - ((int32_t)br + 1));
 		}
 		vector_uint_set(machine_code, inst, br);
 	}
@@ -77,7 +77,7 @@ emit_jtype(
 			uint32_t target
 			)
 {
-	return opcode << 26 | target;
+	return opcode << 26 | target & 0x03FFFFFF;
 }
 
 uint32_t 
@@ -367,14 +367,13 @@ register_entry_t register_table[] =
 	NULL
 };
 
-static label_list_t* root_label_list = NULL;
-static vector_uint_t * global_machine_code = NULL;
-
-static pStringTable StringTable = NULL;
-static pHashTable RelocTable = NULL;
-static pHashTable JmpTable = NULL;
-static uint32_t FNV1a_Offset_32 = 2166136261;
-static uint32_t FNV1a_Prime_32 = 16777619;
+label_list_t* root_label_list = NULL;
+vector_uint_t * global_machine_code = NULL;
+pStringTable StringTable = NULL;
+pHashTable RelocTable = NULL;
+pHashTable JmpTable = NULL;
+uint32_t FNV1a_Offset_32 = 2166136261;
+uint32_t FNV1a_Prime_32 = 16777619;
 
 static uint32_t HashString(const char* str)
 {
