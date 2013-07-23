@@ -45,19 +45,6 @@ typedef tHashNode* pHashNode;
 typedef tHashTable* pHashTable;
 typedef tStringTable* pStringTable;
 
-/*******************************************************************************
- *
- * Invokes the assembling of a collection of MIPS assembly instructions.
- *
- *******************************************************************************
- *
- * PARAMETERS
- *  tHashTable*        Vector holding the MIPS assembly instructions which
- *          are to be assembled.
- *  machine_code        Empty vector to hold the 32-bit binary instructions
- *          which will result from the assembling.
- *
- ******************************************************************************/
 
 typedef uint32_t (*pHashFunc)(const tHashTable*, const uint32_t hash);
 
@@ -118,8 +105,10 @@ void
 
 /*******************************************************************************
  *
- * an enum for each type of instruction
+ * enum for each type of instruction
  * 
+ *******************************************************************************
+ *
  * Values
  *  I_TYPE	Instruction of type i
  * 
@@ -136,7 +125,9 @@ typedef enum instruction_type_t
 
 /*******************************************************************************
  *
- * an enum for each mips instruction opcode
+ * enum for each mips instruction opcode
+ *
+ *******************************************************************************
  * 
  * Values
  *  ADD		Instruction ADD of MIPS Instruction Set
@@ -178,8 +169,10 @@ typedef enum instruction_opcode_t
 
 /*******************************************************************************
  *
- * an enum for each register in the MIPS machine
+ * enum for each register in the MIPS machine
  * 
+ *******************************************************************************
+ *
  * Values
  *  ZERO	Register $0 in the MIPS machine
  *

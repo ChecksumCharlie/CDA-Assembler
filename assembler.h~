@@ -45,6 +45,20 @@ typedef tHashNode* pHashNode;
 typedef tHashTable* pHashTable;
 typedef tStringTable* pStringTable;
 
+/*******************************************************************************
+ *
+ * Invokes the assembling of a collection of MIPS assembly instructions.
+ *
+ *******************************************************************************
+ *
+ * PARAMETERS
+ *  tHashTable*        Vector holding the MIPS assembly instructions which
+ *          are to be assembled.
+ *  machine_code        Empty vector to hold the 32-bit binary instructions
+ *          which will result from the assembling.
+ *
+ ******************************************************************************/
+
 typedef uint32_t (*pHashFunc)(const tHashTable*, const uint32_t hash);
 
 
@@ -102,15 +116,136 @@ void
 	char* str
 	);
 
+/*******************************************************************************
+ *
+ * an enum for each type of instruction
+ * 
+ * Values
+ *  I_TYPE	Instruction of type i
+ * 
+ *  J_TYPE	Instruction of type j
+ *
+ *  R_TYPE	Instruction of type r	
+ *
+ ******************************************************************************/
+
 typedef enum instruction_type_t
 {
 	I_TYPE, J_TYPE, R_TYPE
 } instruction_type_t;
 
+/*******************************************************************************
+ *
+ * an enum for each mips instruction opcode
+ * 
+ * Values
+ *  ADD		Instruction ADD of MIPS Instruction Set
+ * 
+ *  DIV		Instruction DIV of MIPS Instruction Set
+ * 
+ *  JR		Instruction JR of MIPS Instruction Set
+ * 
+ *  MFLO	Instruction MFLO of MIPS Instruction Set
+ * 
+ *  MULT	Instruction MULT of MIPS Instruction Set
+ * 
+ *  SLL		Instruction SLL of MIPS Instruction Set
+ * 
+ *  SUB		Instruction SUB of MIPS Instruction Set
+ * 
+ *  ADDI	Instruction ADDI of MIPS Instruction Set
+ * 
+ *  BLTZ	Instruction BLTZ of MIPS Instruction Set
+ * 
+ *  BNE		Instruction BNE of MIPS Instruction Set
+ * 
+ *  LW		Instruction LW of MIPS Instruction Set
+ * 
+ *  SW		Instruction SW of MIPS Instruction Set
+ * 
+ *  J		Instruction J of MIPS Instruction Set
+ * 
+ *  JAL		Instruction JAL of MIPS Instruction Set
+ * 
+ *  LI		Instruction LI of MIPS Instruction Set
+ *
+ ******************************************************************************/
+
 typedef enum instruction_opcode_t
 {
 	ADD, DIV, JR, MFLO, MULT, SLL, SUB, ADDI, BLTZ, BNE, LW, SW, J, JAL, LI
 } instruction_opcode_t;
+
+/*******************************************************************************
+ *
+ * an enum for each register in the MIPS machine
+ * 
+ * Values
+ *  ZERO	Register $0 in the MIPS machine
+ *
+ *  AT		Register $at in the MIPS machine
+ *
+ *  V0		Register $v0 in the MIPS machine
+ *
+ *  V1		Register $v1 in the MIPS machine
+ *
+ *  A0		Register $a0 in the MIPS machine
+ *
+ *  A1		Register $a1 in the MIPS machine
+ *
+ *  A2		Register $a2 in the MIPS machine
+ *
+ *  A3		Register $a3 in the MIPS machine
+ *
+ *  T0		Register $t0 in the MIPS machine
+ *
+ *  T1		Register $t1 in the MIPS machine
+ *
+ *  T2		Register $t2 in the MIPS machine
+ *
+ *  T3		Register $t3 in the MIPS machine
+ *
+ *  T4		Register $t4 in the MIPS machine
+ *
+ *  T5		Register $t5 in the MIPS machine
+ *
+ *  T6		Register $t6 in the MIPS machine
+ *
+ *  T7		Register $t7 in the MIPS machine
+ *
+ *  S0		Register $s0 in the MIPS machine
+ *
+ *  S1		Register $s1 in the MIPS machine
+ *
+ *  S2		Register $s2 in the MIPS machine
+ *
+ *  S3		Register $s3 in the MIPS machine
+ *
+ *  S4		Register $s4 in the MIPS machine
+ *
+ *  S5		Register $s5 in the MIPS machine
+ *
+ *  S6		Register $s6 in the MIPS machine
+ *
+ *  S7		Register $s7 in the MIPS machine
+ *
+ *  T8		Register $t8 in the MIPS machine
+ *
+ *  T9		Register $t9 in the MIPS machine
+ *
+ *  K0		Register $k0 in the MIPS machine
+ *
+ *  K1		Register $k1 in the MIPS machine
+ *
+ *  GP		Register $gp in the MIPS machine
+ *
+ *  SP		Register $sp in the MIPS machine
+ *
+ *  FP		Register $fp in the MIPS machine
+ *
+ *  RA		Register $ra in the MIPS machine
+ *
+ ******************************************************************************/
 
 typedef enum register_type_t
 {
