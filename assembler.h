@@ -206,10 +206,12 @@ static uint32_t FNV1a_Offset_32;
 static pStringTable StringTable;
 static pHashTable RelocTable;
 static pHashTable JmpTable;
+static pHashTable register_table;
+static pHashTable instruction_table;
 static vector_uint_t * global_machine_code;
 
-extern instruction_entry_t instruction_table[];
-extern register_entry_t register_table[];
+extern instruction_entry_t instruction_build_table[];
+extern register_entry_t register_build_table[];
 
 
 #endif // __ASSEMBER_H__

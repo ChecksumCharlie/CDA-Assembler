@@ -25,6 +25,21 @@ assemble(
 	JmpTable = HashTableAllocate(HASH_WORD);
 	StringTable = StringTableAllocate();
 	RelocTable = HashTableAllocate(HASH_WORD);
+	instruction_table = HashTableAllocate(HASH_STRING);
+	register_table = HashTableAllocate(HASH_STRING);
+	
+	{
+		register_entry_t* iter;
+		for(iter = register_build_table; iter->name != NULL; iter++)
+			HashTableInsertString(register_table, iter->name, &i)->data.ptr = iter;
+	}
+
+	{
+		instruction_entry_t* iter;
+		for(iter = instruction_build_table; iter->name != NULL; iter++)
+			HashTableInsertString(instruction_table, iter->name, &i)->data.ptr = iter;
+	}
+
 	for(i = 0; i < mips_assembly->size; i++)
 	{
 		parse_instruction(vector_string_get(mips_assembly, i));
@@ -52,6 +67,8 @@ assemble(
 
 	HashTableFree(JmpTable);
 	HashTableFree(RelocTable);
+	HashTableFree(instruction_table);
+	HashTableFree(register_table);
 	StringTableFree(StringTable);
 }
 
@@ -98,13 +115,11 @@ lookup_instruction(
 					char* str
 					)
 {
-	instruction_entry_t* iter;
-	for(iter = instruction_table; (iter->name) != NULL; iter++)
-	{
-		if(strcmp(str, iter->name) == 0)
-			return iter;
-	}
-	return NULL;
+	pHashNode node = HashTableInsertString(register_table, str, NULL);
+	if(node == NULL)
+		return NULL;
+
+	return (instruction_entry_t*)node->data.ptr;
 }
 
 register_entry_t*
@@ -112,13 +127,8 @@ lookup_register(
 					char* str
 					)
 {
-	register_entry_t* iter;
-	for(iter = register_table; (iter->name) != NULL; iter++)
-	{
-		if(strcmp(str, iter->name) == 0)
-			return iter;
-	}
-	return NULL;
+	pHashNode node = HashTableInsertString(register_table, str, NULL);
+	return (register_entry_t*)node->data.ptr;
 }
 
 uint8_t
@@ -269,7 +279,7 @@ parse_instruction(
 	}
 }
 
-instruction_entry_t instruction_table[] = 
+instruction_entry_t instruction_build_table[] = 
 {
 	{"add", R_TYPE, ADD, 32},
 	{"div", R_TYPE, DIV, 26},
@@ -288,7 +298,7 @@ instruction_entry_t instruction_table[] =
 	NULL
 };
 
-register_entry_t register_table[] = 
+register_entry_t register_build_table[] = 
 {
 	{"zero", ZERO},
 	{"at", AT},
@@ -329,6 +339,8 @@ vector_uint_t * global_machine_code = NULL;
 pStringTable StringTable = NULL;
 pHashTable RelocTable = NULL;
 pHashTable JmpTable = NULL;
+pHashTable register_table = NULL;
+pHashTable instruction_table = NULL;
 uint32_t FNV1a_Offset_32 = 2166136261;
 uint32_t FNV1a_Prime_32 = 16777619;
 
