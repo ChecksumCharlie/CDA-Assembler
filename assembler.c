@@ -348,14 +348,14 @@ register_entry_t register_build_table[] =
 	NULL
 };
 
-vector_uint_t * global_machine_code = NULL;
-pStringTable StringTable = NULL;
-pHashTable RelocTable = NULL;
-pHashTable JmpTable = NULL;
-pHashTable register_table = NULL;
-pHashTable instruction_table = NULL;
-uint32_t FNV1a_Offset_32 = 2166136261;
-uint32_t FNV1a_Prime_32 = 16777619;
+static vector_uint_t * global_machine_code = NULL;
+static pStringTable StringTable = NULL;
+static pHashTable RelocTable = NULL;
+static pHashTable JmpTable = NULL;
+static pHashTable register_table = NULL;
+static pHashTable instruction_table = NULL;
+static uint32_t FNV1a_Offset_32 = 2166136261;
+static uint32_t FNV1a_Prime_32 = 16777619;
 
 static uint32_t HashString(const char* str)
 {
