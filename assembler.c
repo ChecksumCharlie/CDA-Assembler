@@ -185,112 +185,70 @@ parse_instruction(
 		printf("Unknown instruction '%s'\n", str);
 		exit(0);
 	}
-	
+
+	str = str + (term - str) + 1;
+	term = strtok(str, " ,");
 	switch(inst->opcode)
 	{
 	case SUB:
 	case ADD:
-		{
-			str = strpbrk(str + (term - str) + 1, "$");
-			term = strpbrk(str, ",");
-			*term = NULL;
-			d = parse_register(str);
-			str = strpbrk(str + (term - str) + 1, "$");
-			term = strpbrk(str, ",");
-			*term = NULL;
-			s = parse_register(str);
-			str = strpbrk(str + (term - str) + 1, "$");
-			t = parse_register(str);
-		}
+			d = parse_register(term);
+			term = strtok(NULL, " ,");
+			s = parse_register(term);
+			term = strtok(NULL, " ");
+			t = parse_register(term);
 		break;
 	case MULT:
 	case DIV:
-			str = strpbrk(str + (term - str) + 1, "$");
-			term = strpbrk(str, ",");
-			*term = NULL;
-			s = parse_register(str);
-			str = strpbrk(str + (term - str) + 1, "$");
-			t = parse_register(str);
+			s = parse_register(term);
+			term = strtok(NULL, " ,");
+			t = parse_register(term);
 		break;
 	case JR:
-		str = strpbrk(str + (term - str) + 1, "$");
-		s = parse_register(str);
+			s = parse_register(term);
 		break;
 	case MFLO:
-		str = strpbrk(str + (term - str) + 1, "$");
-		d = parse_register(str);
+			d = parse_register(term);
 		break;
 	case SLL:
-			str = strpbrk(str + (term - str) + 1, "$");
-			term = strpbrk(str, ",");
-			*term = NULL;
-			d = parse_register(str);
-			str = strpbrk(str + (term - str) + 1, "$");
-			term = strpbrk(str, ",");
-			*term = NULL;
-			t = parse_register(str);
-			str = (str + (term - str) + 1);
-			h = parse_number(str);
+			d = parse_register(term);
+			term = strtok(NULL, " ,");
+			t = parse_register(term);
+			term = strtok(NULL, " ");
+			h = parse_number(term);
 		break;
 	case ADDI:
-			str = strpbrk(str + (term - str) + 1, "$");
-			term = strpbrk(str, ",");
-			*term = NULL;
-			t = parse_register(str);
-			str = strpbrk(str + (term - str) + 1, "$");
-			term = strpbrk(str, ",");
-			*term = NULL;
-			s = parse_register(str);
-			str = (str + (term - str) + 1);
-			offset = parse_number(str);
+			t = parse_register(term);
+			term = strtok(NULL, " ,");
+			s = parse_register(term);
+			term = strtok(NULL, " ");
+			offset = parse_number(term);
 		break;
 	case BLTZ:
-			str = strpbrk(str + (term - str) + 1, "$");
-			term = strpbrk(str, ",");
-			*term = NULL;
-			s = parse_register(str);
-			str = (str + (term - str) + 1);
-			while(*str == ' ')
-				str++;
-			offset = StringTableGetIndex(StringTable, str);
+			s = parse_register(term);
+			term = strtok(NULL, " ,");
+			offset = StringTableGetIndex(StringTable, term);
 			HashTableInsertWord(RelocTable, RelocTable->nnodes, &n)->data.uint32 = global_machine_code->size;
 		break;
 	case BNE:
-			str = strpbrk(str + (term - str) + 1, "$");
-			term = strpbrk(str, ",");
-			*term = NULL;
-			s = parse_register(str);
-			str = strpbrk(str + (term - str) + 1, "$");
-			term = strpbrk(str, ",");
-			*term = NULL;
-			t = parse_register(str);
-			str = (str + (term - str) + 1);
-			while(*str == ' ')
-				str++;
-			offset = StringTableGetIndex(StringTable, str);
+			s = parse_register(term);
+			term = strtok(NULL, " ,");
+			t = parse_register(term);
+			term = strtok(NULL, " ,");
+			offset = StringTableGetIndex(StringTable, term);
 			HashTableInsertWord(RelocTable, RelocTable->nnodes, &n)->data.uint32 = global_machine_code->size;
 		break;
 	case LW:
 	case SW:
-			str = strpbrk(str + (term - str) + 1, "$");
-			term = strpbrk(str, ",");
-			*term = NULL;
-			t = parse_register(str);
-			str = str + (term - str) + 1;
-			term = strpbrk(str, "(");
-			*term = NULL;
-			offset = parse_number(str);
-			str = (str + (term - str) + 1);
-			term = strpbrk(str, ")");
-			*term = NULL;
-			s = parse_register(str);
+			t = parse_register(term);
+			term = strtok(NULL, " (");
+			offset = parse_number(term);
+			term = strtok(NULL, " )");
+			s = parse_register(term);
 		break;
 	case JAL:
 	case J:
-		str = (str + (term - str) + 1);
-		while(*str == ' ')
-			str++;
-		target = StringTableGetIndex(StringTable, str);
+		target = StringTableGetIndex(StringTable, term);
 		HashTableInsertWord(RelocTable, RelocTable->nnodes, &n)->data.uint32 = global_machine_code->size;
 		break;
 	default:
