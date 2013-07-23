@@ -109,7 +109,7 @@ typedef enum instruction_type_t
 
 typedef enum instruction_opcode_t
 {
-	ADD, DIV, JR, MFLO, MULT, SLL, SUB, ADDI, BLTZ, BNE, LW, SW, J, JAL
+	ADD, DIV, JR, MFLO, MULT, SLL, SUB, ADDI, BLTZ, BNE, LW, SW, J, JAL, LI
 } instruction_opcode_t;
 
 typedef enum register_type_t

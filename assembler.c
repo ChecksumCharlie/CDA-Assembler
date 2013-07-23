@@ -115,7 +115,7 @@ lookup_instruction(
 					char* str
 					)
 {
-	pHashNode node = HashTableInsertString(register_table, str, NULL);
+	pHashNode node = HashTableInsertString(instruction_table, str, NULL);
 	if(node == NULL)
 		return NULL;
 
@@ -261,6 +261,18 @@ parse_instruction(
 		target = StringTableGetIndex(StringTable, term);
 		HashTableInsertWord(RelocTable, RelocTable->nnodes, &n)->data.uint32 = global_machine_code->size;
 		break;
+	case LI:
+		{
+			int32_t immi;
+			t = parse_register(term);
+			term = strtok(NULL, " ,");
+			immi = parse_number(term);
+			offset = (immi >> 16) & 0x0000FFFF;
+			vector_uint_add_last(global_machine_code, emit_itype(15, 0, t, offset));
+			offset = immi & 0x0000FFFF;
+			vector_uint_add_last(global_machine_code, emit_itype(13, t, t, offset));
+		}
+		return;
 	default:
 		break;
 	}
@@ -295,6 +307,7 @@ instruction_entry_t instruction_build_table[] =
 	{"sw", I_TYPE, SW, 43 << 26},
 	{"j", J_TYPE, J, 2 << 26},
 	{"jal", J_TYPE, JAL, 3 << 26},
+	{"li", I_TYPE, LI, 0},
 	NULL
 };
 
